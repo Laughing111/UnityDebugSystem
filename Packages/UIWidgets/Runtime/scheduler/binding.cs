@@ -180,6 +180,9 @@ namespace Unity.UIWidgets.scheduler {
                 return true;
             });
 
+            if (Window.instance == null) {
+                Debug.Log("窗口实例为空");
+            }
             Window.instance.scheduleFrame();
             this._hasScheduledFrame = true;
         }
