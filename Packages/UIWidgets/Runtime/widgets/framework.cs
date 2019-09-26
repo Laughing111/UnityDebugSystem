@@ -886,9 +886,6 @@ namespace Unity.UIWidgets.widgets {
 
             if (!this._scheduledFlushDirtyElements && this.onBuildScheduled != null) {
                 this._scheduledFlushDirtyElements = true;
-                if (this.onBuildScheduled == null) {
-                    Debug.Log("委托函数为空");
-                }
                 this.onBuildScheduled();
             }
 

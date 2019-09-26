@@ -146,21 +146,57 @@ namespace RushDevelopement
         }
 
         public List<Widget> debugMsg = new List<Widget>();
-
+        public string filterStr="";
         public void ChangeState()
         {
-            debugMsg.Add(
-                new Column(
-                            crossAxisAlignment:CrossAxisAlignment.start,
-                            children:new Widget[]
+            lock (debugMsg)
+            {
+                if (DebugModel.Ins.temp.Contains(filterStr))
+                {
+                    debugMsg.Add(
+                        new Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: new Widget[]
                             {
                                 new Text(data: DebugModel.Ins.temp, maxLines: 2),
-                                new Divider(color:Colors.blue), 
+                                new Divider(color: Colors.blue),
                             }.ToList()
-                )
-                
-            );
+                        )
+                    );
+                }
+            }
             setState();
+        }
+
+        private void StringFilter(string keyWords)
+        {
+            filterStr = keyWords;
+            if (!string.IsNullOrEmpty(keyWords))
+            {
+                lock (debugMsg)
+                {
+                    debugMsg.Clear();
+
+                    DebugModel.Ins.debugMsg.ForEach(x =>
+                    {
+                        if (x.Contains(keyWords))
+                        {
+                            debugMsg.Add(
+                                new Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: new Widget[]
+                                    {
+                                        new Text(data: x, maxLines: 2),
+                                        new Divider(color: Colors.blue),
+                                    }.ToList()
+                                )
+                            );
+                        }
+                    });
+                }
+               
+                setState();
+            }
         }
 
         public override Widget build(BuildContext context)
@@ -175,11 +211,21 @@ namespace RushDevelopement
                         title: new Text("CustomConsole")
                     ),
                     drawer: null,
-                    body: new SingleChildScrollView(
-                        padding: EdgeInsets.all(16.0f),
-                        child: new Column(children:debugMsg),
-                        reverse: false
-                        ),
+                    body: new Container(
+                        child:new Column (
+                            
+                            children: new Widget[]
+                            {
+                                new TextField(onChanged:StringFilter), 
+                                new Expanded(child:new SingleChildScrollView(
+                                    padding: EdgeInsets.all(16.0f),
+                                    child: new Column(children: debugMsg),
+                                    reverse: false
+                                )
+                                )
+                                
+                            }.ToList()
+                        )),
                     floatingActionButton: new FloatingActionButton(
                         child: new Icon(Icons.clear),
                         onPressed: () =>
@@ -195,6 +241,4 @@ namespace RushDevelopement
             );
         }
     }
-
-    
 }
